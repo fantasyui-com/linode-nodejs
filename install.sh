@@ -1,21 +1,24 @@
 #!/bin/bash
 #
-#<UDF name="ssuser" Label="Sudo user username?" example="username" />
-#<UDF name="sspassword" Label="Sudo user password?" example="strongPassword" />
-#<UDF name="sspubkey" Label="SSH pubkey (installed for root and sudo user)?" example="ssh-rsa ..." />
-#
-# Works for CentOS 7
+#<UDF name="ssuser" Label="Sudo user username?" example="administrator" default="administrator"/>
+#<UDF name="sspassword" Label="Sudo user password?" example="6bba3c13c40f57b8ee387345ddd30838136bf065" />
+#<UDF name="sspubkey" Label="SSH pubkey (installed for root and sudo user)?" example="execute cat ~/.ssh/id_rsa.pub" />
 
 if [[ ! $SSUSER ]]; then read -p "Sudo user username?" SSUSER; fi
 if [[ ! $SSPASSWORD ]]; then read -p "Sudo user password?" SSPASSWORD; fi
 if [[ ! $SSPUBKEY ]]; then read -p "SSH pubkey (installed for root and sudo user)?" SSPUBKEY; fi
 
 # set up sudo user
-echo Setting sudo user: $SSUSER...
+echo Creating nodejs user: $SSUSER...
 useradd $SSUSER && echo $SSPASSWORD | passwd $SSUSER --stdin
 usermod -aG wheel $SSUSER
 echo ...done
 # sudo user complete
+
+# setup node user
+echo Creating nodejs user: nodejs
+sudo useradd -d /home/nodejs -m nodejs
+
 
 # set up ssh pubkey
 # for x in... loop doesn't work here, sadly
@@ -75,7 +78,13 @@ systemctl enable firewalld
 # Use public zone
 firewall-cmd --set-default-zone=public
 firewall-cmd --zone=public --add-interface=eth0
-firewall-cmd --add-service=http --permanent
+
+firewall-cmd --zone=public --add-port=80/tcp --permanent; # Public Port 80, used in port masquerade
+firewall-cmd --zone=public --add-port=443/tcp --permanent; # Public Port 443, used in port masquerade
+firewall-cmd --zone=public --add-masquerade --permanent; # 80 -> 8080 masquerade
+firewall-cmd --zone=public --add-forward-port=port=80:proto=tcp:toport=8080 --permanent;
+firewall-cmd --zone=public --add-forward-port=port=443:proto=tcp:toport=8443 --permanent;
+
 firewall-cmd --reload
 echo ...done
 #
@@ -94,6 +103,27 @@ systemctl start ntpd
 # install node
 curl --silent --location https://rpm.nodesource.com/setup_10.x | bash -
 yum -y install nodejs
+setcap 'cap_net_bind_service=+ep' $(readlink -f $(which node))
+
+      # do things as nodejs
+      sudo su - nodejs
+
+      npm i -g pm2
+
+      # enter /home/nodejs
+      cd ~
+
+      mkdir server
+      cd server
+      echo "require('bonsoir');" > server.js
+      npm init -y # this detects server.js and adds it into npm run
+      npm i bonsoir
+      
+      # npm start
+
+      # exit the su session
+      exit
+
 
 #
 echo All finished! Rebooting...
