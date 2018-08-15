@@ -4,6 +4,6 @@
 #<UDF name="sspassword" Label="Sudo user password?" example="strongPassword" />
 #<UDF name="sspubkey" Label="SSH pubkey (installed for root and sudo user)?" example="ssh-rsa ..." />
 
-curl -o out.sh -L https://raw.githubusercontent.com/mb243/linux-deployment-scripts/master/hardened-CentOS7.sh
+curl -o out.sh -L https://raw.githubusercontent.com/fantasyui-com/linode-nodejs/master/install.sh
 
 . ./out.sh
