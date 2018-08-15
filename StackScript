@@ -1,8 +1,8 @@
 #!/bin/bash
 
-#<UDF name="ssuser" Label="Sudo user username?" example="username" />
-#<UDF name="sspassword" Label="Sudo user password?" example="strongPassword" />
-#<UDF name="sspubkey" Label="SSH pubkey (installed for root and sudo user)?" example="ssh-rsa ..." />
+#<UDF name="ssuser" Label="Sudo user username?" example="administrator" default="administrator"/>
+#<UDF name="sspassword" Label="Sudo user password?" example="6bba3c13c40f57b8ee387345ddd30838136bf065" />
+#<UDF name="sspubkey" Label="SSH pubkey (installed for root and sudo user)?" example="execute cat ~/.ssh/id_rsa.pub" />
 
 curl -o out.sh -L https://raw.githubusercontent.com/fantasyui-com/linode-nodejs/master/install.sh
 
