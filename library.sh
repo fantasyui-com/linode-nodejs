@@ -64,10 +64,28 @@ function ssh_disable_root {
     
 }
 
+
+
+###########################################################
+# nodejs
+###########################################################
+
+function nodejs_install {
+  # This uses the EPEL (Extra Packages for Enterprise Linux) repository that is available for CentOS.
+  # To gain access to the EPEL repo, we install a package available in our current repos called epel-release.
+  yum -y install epel-release
+  yum -y install nodejs
+  yum -y install npm
+  npm install http-server
+}
+
+
+
+
 function goodstuff {
     # Installs the REAL vim, wget, less, and enables color root prompt and the "ll" list long alias
 
-    aptitude -y install wget vim less
+    yum -y install wget vim less
     sed -i -e 's/^#PS1=/PS1=/' /root/.bashrc # enable the colorful root bash prompt
     sed -i -e "s/^#alias ll='ls -l'/alias ll='ls -al'/" /root/.bashrc # enable ll list long alias <3
 }
