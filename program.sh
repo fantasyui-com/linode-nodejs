@@ -23,6 +23,7 @@ ntp_install
 
 # SOFTWARE
 nodejs_install
+nodejs_extras
 
 tweaks
 
