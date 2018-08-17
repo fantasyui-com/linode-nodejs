@@ -140,6 +140,8 @@ function https_masquerade_firewall {
   firewall-cmd --set-default-zone=public
   firewall-cmd --zone=public --add-interface=eth0
 
+  firewall-cmd --zone=public --add-port=$SSHPORT/tcp --permanent; # Add new SSH port
+
   firewall-cmd --zone=public --add-port=80/tcp --permanent; # Public Port 80, used in port masquerade
   firewall-cmd --zone=public --add-port=81/tcp --permanent; # for developers and stats...
   firewall-cmd --zone=public --add-port=82/tcp --permanent; # for developers and stats...
