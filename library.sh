@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Uses code from StackScript Bash Library
+# Uses some code from StackScript Bash Library
 
 function system_update {
   # runs update
@@ -9,31 +9,34 @@ function system_update {
 
 function system_autoupdate {
   # schedules automatic updates
-  /sbin/chkconfig --level 345 yum on; /sbin/service yum start
-}
-
-function system_primary_ip {
-  # returns the primary IP assigned to eth0
-  echo $(ifconfig eth0 | awk -F: '/inet addr:/ {print $2}' | awk '{ print $1 }')
+  
+  yum -y install yum-cron
+  sed -i -e "s/update_cmd = default/update_cmd = security/" /etc/yum/yum-cron.conf
+  sed -i -e "s/apply_updates = no/apply_updates = yes/" /etc/yum/yum-cron.conf
+  
+  systemctl enable yum-cron
+  systemctl start yum-cron
+  systemctl status yum-cron
 }
 
 function user_add_sudo {
-    # Installs sudo if needed and creates a user in the sudo group.
-    #
-    # $1 - Required - username
-    # $2 - Required - password
-    USERNAME="$1"
-    USERPASS="$2"
+  # Installs sudo if needed and creates a user in the sudo group.
+  #
+  # $1 - Required - username
+  # $2 - Required - password
+  USERNAME="$1"
+  USERPASS="$2"
 
-    if [ ! -n "$USERNAME" ] || [ ! -n "$USERPASS" ]; then
-        echo "No new username and/or password entered"
-        return 1;
-    fi
-    
-    yum -y install sudo
-    adduser $USERNAME --disabled-password --gecos ""
-    echo "$USERNAME:$USERPASS" | chpasswd
-    usermod -aG sudo $USERNAME
+  if [ ! -n "$USERNAME" ] || [ ! -n "$USERPASS" ]; then
+      echo "No new username and/or password entered"
+      return 1;
+  fi
+
+  yum -y install sudo
+  adduser $USERNAME 
+  echo "$USERNAME:$USERPASS" | chpasswd
+  usermod -aG wheel $USERNAME
+  passwd -l $USERNAME # lock user (disable login) from now on use `su - username`
 }
 
 function user_add_pubkey {
@@ -93,19 +96,6 @@ function nodejs_install {
 }
 
 
-###########################################################
-# fail2ban
-###########################################################
-
-function fail2ban_install {
-  yum install -y fail2ban
-  cd /etc/fail2ban
-  cp fail2ban.conf fail2ban.local
-  cp jail.conf jail.local
-  sed -i -e "s/backend = auto/backend = systemd/" /etc/fail2ban/jail.local
-  systemctl enable fail2ban
-  systemctl start fail2ban
-}
 
 function https_masquerade_firewall {
   systemctl start firewalld
@@ -155,6 +145,12 @@ function tweaks {
     yum remove -y avahi chrony
     sed -i -e 's/^#PS1=/PS1=/' /root/.bashrc # enable the colorful root bash prompt
     sed -i -e "s/^#alias ll='ls -l'/alias ll='ls -al'/" /root/.bashrc # enable ll list long alias <3
+}
+
+
+function system_primary_ip {
+  # returns the primary IP assigned to eth0
+  echo $(ifconfig eth0 | awk -F: '/inet addr:/ {print $2}' | awk '{ print $1 }')
 }
 
 function randomString {
