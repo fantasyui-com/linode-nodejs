@@ -184,4 +184,7 @@ function tweaks {
     yum remove -y avahi chrony
     sed -i -e 's/^#PS1=/PS1=/' /root/.bashrc # enable the colorful root bash prompt
     sed -i -e "s/^#alias ll='ls -l'/alias ll='ls -al'/" /root/.bashrc # enable ll list long alias <3
+    
+    # git config --global user.name "<your_github_username>"
+    # git config --global user.email "<your_github_email>"
 }
