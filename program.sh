@@ -3,6 +3,7 @@
 if [[ ! $SSUSER ]]; then read -p "Sudo user username?" SSUSER; fi
 if [[ ! $SSPASSWORD ]]; then read -p "Sudo user password?" SSPASSWORD; fi
 if [[ ! $SSPUBKEY ]]; then read -p "SSH pubkey (installed for root and sudo user)?" SSPUBKEY; fi
+if [[ ! $SSHPORT ]]; then read -p "SSH port?" SSHPORT; fi
 
 # USERS
 user_add_sudo "$SSUSER" "$SSPASSWORD" && user_add_pubkey "$SSUSER" "$SSPUBKEY"
