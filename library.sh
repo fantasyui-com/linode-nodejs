@@ -65,14 +65,15 @@ function user_add_pubkey {
 }
 
 function ssh_disable_root {
-  # Disables root SSH access.
+  # Disables root SSH access, root user will not be able to login. Login as normal user and then sudo -s to gain root powers
   sed -i -e "s/^#*PermitRootLogin.*$/PermitRootLogin no/" /etc/ssh/sshd_config;
-  touch /tmp/restart-ssh
+  systemctl restart sshd
 }
 
 function ssh_disable_password_authentication {
+  # Disables use of passwords from now on ensure that /home/******/.ssh/authorized_keys contains your ~/.ssh/id_rsa.pub
   sed -i -e "s/^#*PasswordAuthentication.*$/PasswordAuthentication no/" /etc/ssh/sshd_config
-  touch /tmp/restart-ssh
+  systemctl restart sshd
 }
 
 
