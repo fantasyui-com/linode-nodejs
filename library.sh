@@ -65,15 +65,13 @@ function user_add_pubkey {
 }
 
 function ssh_disable_root {
-    # Disables root SSH access.
-  sed -i -e "s/PermitRootLogin yes/PermitRootLogin no/" /etc/ssh/sshd_config
-  sed -i -e "s/#PermitRootLogin no/PermitRootLogin no/" /etc/ssh/sshd_config
+  # Disables root SSH access.
+  sed -i -e "s/^#*PermitRootLogin.*$/PermitRootLogin no/" /etc/ssh/sshd_config;
   touch /tmp/restart-ssh
 }
 
 function ssh_disable_password_authentication {
-  sed -i -e "s/PasswordAuthentication yes/PasswordAuthentication no/" /etc/ssh/sshd_config
-  sed -i -e "s/#PasswordAuthentication no/PasswordAuthentication no/" /etc/ssh/sshd_config
+  sed -i -e "s/^#*PasswordAuthentication.*$/PasswordAuthentication no/" /etc/ssh/sshd_config
   touch /tmp/restart-ssh
 }
 
