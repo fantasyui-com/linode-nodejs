@@ -98,7 +98,21 @@ function ssh_disable_password_authentication {
   systemctl restart sshd
 }
 
+function ssh_change_port {
+  # Adds the users public key to authorized_keys for the specified user. Make sure you wrap your input variables in double quotes, or the key may not load properly.
+  #
+  #
+  # $1 - Required - port
+  SSHPORT="$1"
 
+  if [ ! -n "$SSHPORT" ] ; then
+      echo "Must provide a new port number"
+      return 1;
+  fi
+
+  sed -i 's/#Port 22/Port '$SSHPORT'/' /etc/ssh/sshd_config
+  systemctl restart sshd
+}
 
 ###########################################################
 # nodejs
@@ -110,13 +124,13 @@ function nodejs_install {
   yum -y install epel-release
   yum update -y
   yum -y install nodejs
-  yum -y install npm
-  npm install -g http-server
-  npm install -g pm2
   setcap 'cap_net_bind_service=+ep' $(readlink -f $(which node))
 }
 
-
+function nodejs_extras {
+  npm install -g http-server
+  npm install -g pm2
+}
 
 function https_masquerade_firewall {
   systemctl start firewalld
@@ -129,6 +143,7 @@ function https_masquerade_firewall {
   firewall-cmd --zone=public --add-port=80/tcp --permanent; # Public Port 80, used in port masquerade
   firewall-cmd --zone=public --add-port=81/tcp --permanent; # for developers and stats...
   firewall-cmd --zone=public --add-port=82/tcp --permanent; # for developers and stats...
+  firewall-cmd --zone=public --add-port=83/tcp --permanent; # for developers and stats...
 
   firewall-cmd --zone=public --add-port=443/tcp --permanent; # Public Port 443, used in port masquerade
   firewall-cmd --zone=public --add-masquerade --permanent; # 80 -> 8080 masquerade
@@ -136,6 +151,7 @@ function https_masquerade_firewall {
   firewall-cmd --zone=public --add-forward-port=port=80:proto=tcp:toport=8080 --permanent;
   firewall-cmd --zone=public --add-forward-port=port=81:proto=tcp:toport=8081 --permanent;
   firewall-cmd --zone=public --add-forward-port=port=82:proto=tcp:toport=8082 --permanent;
+  firewall-cmd --zone=public --add-forward-port=port=83:proto=tcp:toport=8083 --permanent;
 
   firewall-cmd --zone=public --add-forward-port=port=443:proto=tcp:toport=8443 --permanent;
 
