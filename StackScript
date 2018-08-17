@@ -3,6 +3,7 @@
 #<UDF name="ssuser" Label="Sudo user username?" example="administrator" default="administrator"/>
 #<UDF name="sspassword" Label="Sudo user password?" example="Execute `base64 /dev/urandom | tr -d '/+' | head -c 32` to make a password." />
 #<UDF name="sspubkey" Label="SSH pubkey (installed for root and sudo user)?" example="Execute `cat ~/.ssh/id_rsa.pub` to get your key." />
+#<UDF name="sshport" Label="sshport" example="Default is 22" default="22"/>
 
 DEPLOYMENT_BASE_URL=https://raw.githubusercontent.com/fantasyui-com/linode-nodejs/master
 DEPLOYMENT_BASE_DIR=/tmp
