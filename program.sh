@@ -5,7 +5,7 @@ if [[ ! $SSPASSWORD ]]; then read -p "Sudo user password?" SSPASSWORD; fi
 if [[ ! $SSPUBKEY ]]; then read -p "SSH pubkey (installed for root and sudo user)?" SSPUBKEY; fi
 
 # USERS
-user_add_sudo "$SSUSER" "$SSPASSWORD" && user_add_pubkey "$SSUSER" $SSPUBKEY
+user_add_sudo "$SSUSER" "$SSPASSWORD" && user_add_pubkey "$SSUSER" "$SSPUBKEY"
 
 # BASE NETSEC
 ssh_disable_root
@@ -16,7 +16,6 @@ system_update
 system_autoupdate
 
 # NETSEC
-fail2ban_install
 https_masquerade_firewall
 setup_kernel_and_grub
 ntp_install
