@@ -10,6 +10,7 @@ user_add_sudo "$SSUSER" "$SSPASSWORD" && user_add_pubkey "$SSUSER" "$SSPUBKEY"
 # BASE NETSEC
 ssh_disable_root
 ssh_disable_password_authentication
+ssh_change_port "$SSHPORT"
 
 # BASE UPDATE
 system_update
