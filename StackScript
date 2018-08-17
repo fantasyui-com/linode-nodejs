@@ -1,9 +1,17 @@
 #!/bin/bash
 
 #<UDF name="ssuser" Label="Sudo user username?" example="administrator" default="administrator"/>
-#<UDF name="sspassword" Label="Sudo user password?" example="6bba3c13c40f57b8ee387345ddd30838136bf065" />
-#<UDF name="sspubkey" Label="SSH pubkey (installed for root and sudo user)?" example="execute cat ~/.ssh/id_rsa.pub" />
+#<UDF name="sspassword" Label="Sudo user password?" example="Execute `base64 /dev/urandom | tr -d '/+' | head -c 32` to make a password." />
+#<UDF name="sspubkey" Label="SSH pubkey (installed for root and sudo user)?" example="Execute `cat ~/.ssh/id_rsa.pub` to get your key." />
 
-curl -o out.sh -L https://raw.githubusercontent.com/fantasyui-com/linode-nodejs/master/install.sh
+DEPLOYMENT_BASE_URL=https://raw.githubusercontent.com/fantasyui-com/linode-nodejs/master
+DEPLOYMENT_BASE_DIR=/tmp
 
-. ./out.sh
+DEPLOYMENT_LIBRARY=library.sh
+DEPLOYMENT_PROGRAM=program.sh
+
+curl -o $DEPLOYMENT_BASE_DIR/$DEPLOYMENT_LIBRARY -L $DEPLOYMENT_BASE_URL/$DEPLOYMENT_LIBRARY
+curl -o $DEPLOYMENT_BASE_DIR/$DEPLOYMENT_PROGRAM -L $DEPLOYMENT_BASE_URL/$DEPLOYMENT_PROGRAM
+
+source $DEPLOYMENT_BASE_DIR/$DEPLOYMENT_LIBRARY
+source $DEPLOYMENT_BASE_DIR/$DEPLOYMENT_PROGRAM
