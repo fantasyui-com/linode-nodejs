@@ -36,7 +36,7 @@ function user_add_sudo {
   adduser $USERNAME 
   echo "$USERNAME:$USERPASS" | chpasswd
   usermod -aG wheel $USERNAME
-  passwd -l $USERNAME # lock user (disable login) from now on use `su - username`
+  # passwd -l $USERNAME # lock user (disable login) from now on use `su - username`
 }
 
 function user_add_pubkey {
