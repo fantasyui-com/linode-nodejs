@@ -2,6 +2,28 @@
 #
 # Uses some code from StackScript Bash Library
 
+###########################################################
+# utils
+###########################################################
+
+function system_primary_ip {
+  # returns the primary IP assigned to eth0
+  echo $(ifconfig eth0 | awk -F: '/inet addr:/ {print $2}' | awk '{ print $1 }')
+}
+
+function randomString {
+    if [ ! -n "$1" ];
+        then LEN=20
+        else LEN="$1"
+    fi
+    echo $(</dev/urandom tr -dc A-Za-z0-9 | head -c $LEN) # generate a random string
+}
+
+###########################################################
+# functions
+###########################################################
+
+
 function system_update {
   # runs update
   yum update;
@@ -105,17 +127,20 @@ function https_masquerade_firewall {
   firewall-cmd --zone=public --add-interface=eth0
 
   firewall-cmd --zone=public --add-port=80/tcp --permanent; # Public Port 80, used in port masquerade
+  firewall-cmd --zone=public --add-port=81/tcp --permanent; # for developers and stats...
+  firewall-cmd --zone=public --add-port=82/tcp --permanent; # for developers and stats...
+
   firewall-cmd --zone=public --add-port=443/tcp --permanent; # Public Port 443, used in port masquerade
   firewall-cmd --zone=public --add-masquerade --permanent; # 80 -> 8080 masquerade
+
   firewall-cmd --zone=public --add-forward-port=port=80:proto=tcp:toport=8080 --permanent;
+  firewall-cmd --zone=public --add-forward-port=port=81:proto=tcp:toport=8081 --permanent;
+  firewall-cmd --zone=public --add-forward-port=port=82:proto=tcp:toport=8082 --permanent;
+
   firewall-cmd --zone=public --add-forward-port=port=443:proto=tcp:toport=8443 --permanent;
 
   firewall-cmd --reload
 }
-
-
-
-
 
 function setup_kernel_and_grub {
   #
@@ -132,31 +157,13 @@ function ntp_install {
   yum install -y ntp
   systemctl enable ntpd
   systemctl start ntpd
+  systemctl status ntpd
 }
-
-
-
 
 function tweaks {
     # Installs the REAL vim, wget, less, and enables color root prompt and the "ll" list long alias
-
     yum -y install wget vim less
     yum remove -y avahi chrony
     sed -i -e 's/^#PS1=/PS1=/' /root/.bashrc # enable the colorful root bash prompt
     sed -i -e "s/^#alias ll='ls -l'/alias ll='ls -al'/" /root/.bashrc # enable ll list long alias <3
-}
-
-
-function system_primary_ip {
-  # returns the primary IP assigned to eth0
-  echo $(ifconfig eth0 | awk -F: '/inet addr:/ {print $2}' | awk '{ print $1 }')
-}
-
-function randomString {
-    if [ ! -n "$1" ];
-        then LEN=20
-        else LEN="$1"
-    fi
-
-    echo $(</dev/urandom tr -dc A-Za-z0-9 | head -c $LEN) # generate a random string
 }
